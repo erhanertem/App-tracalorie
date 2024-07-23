@@ -102,6 +102,31 @@ class CalorieTracker {
 	}
 
 	// PUBLIC API
+	removeMeal(id) {
+		// FIND WHERE THIS ID IN THE ARRAY OF MEALS
+		const index = this._meals.findIndex((meal) => meal.id === id);
+		if (index !== -1) {
+			const meal = this._meals[index];
+			// DEDUCT CAL OF THE MEAL FROM THE TOTAL CALORIE
+			this._totalCalories -= meal.calories;
+			// REMOVE THE MEAL FROM THE ARRAY
+			this._meals.splice(index, 1);
+			this._render();
+		}
+	}
+	removeWorkout(id) {
+		// FIND WHERE THIS ID IN THE ARRAY OF MEALS
+		const index = this._workouts.findIndex((workout) => workout.id === id);
+		if (index !== -1) {
+			const workout = this._workouts[index];
+			// DEDUCT CAL OF THE WORKOUT FROM THE TOTAL CALORIE
+			this._totalCalories += workout.calories;
+			// REMOVE THE WORKOUT FROM THE ARRAY
+			this._workouts.splice(index, 1);
+			this._render();
+		}
+	}
+
 	addMeal(meal) {
 		this._meals.push(meal);
 		this._totalCalories += meal.calories;
@@ -145,8 +170,25 @@ class App {
 		// CREATE FORM EVENT LISTENERS UPON APP INITIALIZATION
 		document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));
 		document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
+		document.getElementById('meal-items').addEventListener('click', this._removeItems.bind(this, 'meal'));
+		document.getElementById('workout-items').addEventListener('click', this._removeItems.bind(this, 'workout'));
 	}
 
+	_removeItems(type, e) {
+		// IF CLICKED ONLY ON X ICON
+		if (e.target.classList.contains('delete') || e.target.classList.contains('fa-xmark')) {
+			// IF USER CONFIRMED DELETING
+			if (confirm('Are you sure?')) {
+				// TRAVERSE TO CLOSESTS PARENT TO RETRIEVE THE ID OF THE CLICKED ITEM
+				const id = e.target.closest('.card').getAttribute('data-id');
+				// DEPENDING ON WHAT REMOVED, REMOVE THE ITEM FROM STATS UI
+				type === 'meal' ? this._tracker.removeMeal(id) : this._tracker.removeWorkout(id);
+				// PHYSICALLY REMOVE FROM THE CORRESPONDING FORM LIST
+				const item = e.target.closest('.card').remove();
+				console.log(item);
+			}
+		}
+	}
 	// ADD-NEW-MEAL|ADD-WORKOUT FORM
 	_newItem(type, e) {
 		e.preventDefault();
