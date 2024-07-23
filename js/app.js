@@ -251,7 +251,12 @@ class Storage {
 		localStorage.setItem('workouts', JSON.stringify(workouts));
 	}
 	static resetApp() {
-		localStorage.clear();
+		// IMPORTANT!! CLEARS THE ENTIRE LOCALSTORAGE - NOT DESIRABLE IF NON-RELATED DATA EXISTS
+		// localStorage.clear();
+		// > INDIVIDUALLY CLEAR ITEMS
+		localStorage.removeItem('totalCalories');
+		localStorage.removeItem('meals');
+		localStorage.removeItem('workouts');
 		window.location.reload();
 	}
 }
