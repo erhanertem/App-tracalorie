@@ -84,29 +84,75 @@ class Meal {
 	constructor(name, calories) {
 		this.id = Math.random().toString(16).slice(2);
 		this.name = name;
-		this.calories = calories;
+		this.calories = Number(calories);
 	}
 }
 class Workout {
 	constructor(name, calories) {
 		this.id = Math.random().toString(16).slice(2);
 		this.name = name;
-		this.calories = calories;
+		this.calories = Number(calories);
 	}
 }
 
-const tracker = new CalorieTracker();
+class App {
+	constructor() {
+		// INITIALIZE CALORIE TRACKER UI
+		this._tracker = new CalorieTracker();
 
-const breakfast = new Meal('Breakfast', 1000);
-const lunch = new Meal('Lunch', 175);
-tracker.addMeal(breakfast);
-tracker.addMeal(lunch);
+		// CREATE FORM EVENT LISTENERS UPON APP INITIALIZATION
+		document.getElementById('meal-form').addEventListener('submit', this._newMeal.bind(this));
+		document.getElementById('workout-form').addEventListener('submit', this._newWorkout.bind(this));
+	}
 
-const run = new Workout('Run', 300);
-const yoga = new Workout('Run', 50);
-tracker.addWorkout(run);
-tracker.addWorkout(yoga);
+	// ADD-NEW-MEAL FORM
+	_newMeal(e) {
+		e.preventDefault();
 
-console.log(tracker._meals);
-console.log(tracker._workouts);
-console.log(tracker._totalCalories);
+		const name = document.getElementById('meal-name').value;
+		const calories = document.getElementById('meal-calories').value;
+
+		// GUARD CLAUSE - Validate Inputs
+		if (!name || isNaN(calories) || calories < 0) {
+			alert('Please provide a valid name and positive calorie count.');
+			return;
+		}
+
+		// CREATE MEAL AND ADD IT TO TRACKER
+		const meal = new Meal(name, calories);
+		this._tracker.addMeal(meal);
+
+		// CLEAR FORM INPUTS
+		document.getElementById('meal-form').reset();
+
+		// COLLAPSE FORM
+		const collapseMealForm = document.getElementById('collapse-meal');
+		new bootstrap.Collapse(collapseMealForm, { toggle: true });
+	}
+	// ADD-NEW-WORKOUT FORM
+	_newWorkout(e) {
+		e.preventDefault();
+
+		const name = document.getElementById('workout-name').value;
+		const calories = document.getElementById('workout-calories').value;
+
+		// GUARD CLAUSE - Validate Inputs
+		if (!name || isNaN(calories) || calories < 0) {
+			alert('Please provide a valid name and positive calorie count.');
+			return;
+		}
+
+		// CREATE MEAL AND ADD IT TO TRACKER
+		const meal = new Workout(name, calories);
+		this._tracker.addWorkout(meal);
+
+		// CLEAR FORM INPUTS
+		document.getElementById('meal-form').reset();
+
+		// COLLAPSE FORM
+		const collapseWorkoutForm = document.getElementById('collapse-workout');
+		new bootstrap.Collapse(collapseWorkoutForm, { toggle: true });
+	}
+}
+
+const app = new App();
