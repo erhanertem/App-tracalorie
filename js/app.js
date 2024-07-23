@@ -102,6 +102,17 @@ class CalorieTracker {
 	}
 
 	// PUBLIC API
+	reset() {
+		this._totalCalories = 0;
+		this._meals = [];
+		this._workouts = [];
+		this._displayCaloriesTotal();
+		this._displayCaloriesLimit();
+		this._displayCaloriesConsumed();
+		this._displayCaloriesBurned();
+		this._displayClaoriesRemaining();
+		this._displayCaloriesProgress();
+	}
 	removeMeal(id) {
 		// FIND WHERE THIS ID IN THE ARRAY OF MEALS
 		const index = this._meals.findIndex((meal) => meal.id === id);
@@ -174,8 +185,19 @@ class App {
 		document.getElementById('workout-items').addEventListener('click', this._removeItems.bind(this, 'workout'));
 		document.getElementById('filter-meals').addEventListener('keyup', this._filterItems.bind(this, 'meal'));
 		document.getElementById('filter-workouts').addEventListener('keyup', this._filterItems.bind(this, 'workout'));
+		document.getElementById('reset').addEventListener('click', this._reset.bind(this));
 	}
+	_reset() {
+		// RESET STATS UI
+		this._tracker.reset();
 
+		// REMOVE ITEMS LISTS
+		document.getElementById('meal-items').innerHTML = '';
+		document.getElementById('workout-items').innerHTML = '';
+		// CLEAR INPUT FIELDS
+		document.getElementById('filter-meals').value = '';
+		document.getElementById('filter-workouts').value = '';
+	}
 	_removeItems(type, e) {
 		// IF CLICKED ONLY ON X ICON
 		if (e.target.classList.contains('delete') || e.target.classList.contains('fa-xmark')) {
