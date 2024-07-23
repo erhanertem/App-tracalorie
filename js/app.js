@@ -250,6 +250,10 @@ class Storage {
 		workouts = workouts.filter((workout) => workout.id !== id);
 		localStorage.setItem('workouts', JSON.stringify(workouts));
 	}
+	static resetApp() {
+		localStorage.clear();
+		window.location.reload();
+	}
 }
 
 class App {
@@ -298,6 +302,8 @@ class App {
 		// RESET STATS UI
 		this._tracker.reset();
 
+		// UPDATE LOCALSTORAGE
+		Storage.resetApp();
 		// REMOVE ITEMS LISTS
 		document.getElementById('meal-items').innerHTML = '';
 		document.getElementById('workout-items').innerHTML = '';
