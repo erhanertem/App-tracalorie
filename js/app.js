@@ -102,6 +102,11 @@ class CalorieTracker {
 	}
 
 	// PUBLIC API
+	setLimit(calorieLimit) {
+		this._calorieLimit = calorieLimit;
+		this._displayCaloriesLimit();
+		this._displayClaoriesRemaining();
+	}
 	reset() {
 		this._totalCalories = 0;
 		this._meals = [];
@@ -186,6 +191,30 @@ class App {
 		document.getElementById('filter-meals').addEventListener('keyup', this._filterItems.bind(this, 'meal'));
 		document.getElementById('filter-workouts').addEventListener('keyup', this._filterItems.bind(this, 'workout'));
 		document.getElementById('reset').addEventListener('click', this._reset.bind(this));
+		document.getElementById('limit-form').addEventListener('submit', this._setLimit.bind(this));
+	}
+	_setLimit(e) {
+		e.preventDefault();
+		// SOLICIT THE VALUE TYPED INTO LIMIT-FORM
+		let limit = document.getElementById('limit').value;
+		if (limit === '' || isNaN(Number(limit)) || Number(limit) < 2000) {
+			alert('Please add a compliant limit 2000+');
+			return;
+		}
+
+		// SET THE LIMIT TO STATS UI
+		this._tracker.setLimit(Number(limit));
+		// RESET FORM DATA
+		limit = '';
+		const modalEl = document.getElementById('limit-modal');
+
+		// > #1.Bootstrap way for hiding modal
+		// const modal = bootstrap.Modal.getInstance(modalEl);
+		// modal.hide();
+		// > #2.DOM manuplation Method for hiding modal
+		modalEl.classList.remove('show');
+		document.body.classList.remove('modal-open');
+		document.querySelector('.modal-backdrop').remove();
 	}
 	_reset() {
 		// RESET STATS UI
