@@ -101,16 +101,16 @@ class App {
 		this._tracker = new CalorieTracker();
 
 		// CREATE FORM EVENT LISTENERS UPON APP INITIALIZATION
-		document.getElementById('meal-form').addEventListener('submit', this._newMeal.bind(this));
-		document.getElementById('workout-form').addEventListener('submit', this._newWorkout.bind(this));
+		document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));
+		document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
 	}
 
-	// ADD-NEW-MEAL FORM
-	_newMeal(e) {
+	// ADD-NEW-MEAL|ADD-WORKOUT FORM
+	_newItem(type, e) {
 		e.preventDefault();
 
-		const name = document.getElementById('meal-name').value;
-		const calories = document.getElementById('meal-calories').value;
+		const name = document.getElementById(`${type}-name`).value;
+		const calories = document.getElementById(`${type}-calories`).value;
 
 		// GUARD CLAUSE - Validate Inputs
 		if (!name || isNaN(calories) || calories < 0) {
@@ -119,39 +119,21 @@ class App {
 		}
 
 		// CREATE MEAL AND ADD IT TO TRACKER
-		const meal = new Meal(name, calories);
-		this._tracker.addMeal(meal);
-
-		// CLEAR FORM INPUTS
-		document.getElementById('meal-form').reset();
-
-		// COLLAPSE FORM
-		const collapseMealForm = document.getElementById('collapse-meal');
-		new bootstrap.Collapse(collapseMealForm, { toggle: true });
-	}
-	// ADD-NEW-WORKOUT FORM
-	_newWorkout(e) {
-		e.preventDefault();
-
-		const name = document.getElementById('workout-name').value;
-		const calories = document.getElementById('workout-calories').value;
-
-		// GUARD CLAUSE - Validate Inputs
-		if (!name || isNaN(calories) || calories < 0) {
-			alert('Please provide a valid name and positive calorie count.');
-			return;
+		if (type === 'meal') {
+			const meal = new Meal(name, calories);
+			this._tracker.addMeal(meal);
+		}
+		if (type === 'workout') {
+			const workout = new Workout(name, calories);
+			this._tracker.addWorkout(workout);
 		}
 
-		// CREATE MEAL AND ADD IT TO TRACKER
-		const meal = new Workout(name, calories);
-		this._tracker.addWorkout(meal);
-
 		// CLEAR FORM INPUTS
-		document.getElementById('meal-form').reset();
+		document.getElementById(`${type}-form`).reset();
 
 		// COLLAPSE FORM
-		const collapseWorkoutForm = document.getElementById('collapse-workout');
-		new bootstrap.Collapse(collapseWorkoutForm, { toggle: true });
+		const collapseForm = document.getElementById(`collapse-${type}`);
+		new bootstrap.Collapse(collapseForm, { toggle: true });
 	}
 }
 
