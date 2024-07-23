@@ -2,7 +2,8 @@ class CalorieTracker {
 	constructor() {
 		// this._calorieLimit = 2000;
 		this._calorieLimit = Storage.getCalorieLimit();
-		this._totalCalories = 0;
+		// this._totalCalories = 0;
+		this._totalCalories = Storage.getTotalCalories();
 		this._meals = [];
 		this._workouts = [];
 
@@ -129,6 +130,8 @@ class CalorieTracker {
 			const meal = this._meals[index];
 			// DEDUCT CAL OF THE MEAL FROM THE TOTAL CALORIE
 			this._totalCalories -= meal.calories;
+			// UPDATE STORAGE DATA
+			Storage.updateTotalCalories(this._totalCalories);
 			// REMOVE THE MEAL FROM THE ARRAY
 			this._meals.splice(index, 1);
 			this._render();
@@ -141,6 +144,8 @@ class CalorieTracker {
 			const workout = this._workouts[index];
 			// DEDUCT CAL OF THE WORKOUT FROM THE TOTAL CALORIE
 			this._totalCalories += workout.calories;
+			// UPDATE STORAGE DATA
+			Storage.updateTotalCalories(this._totalCalories);
 			// REMOVE THE WORKOUT FROM THE ARRAY
 			this._workouts.splice(index, 1);
 			this._render();
@@ -151,6 +156,8 @@ class CalorieTracker {
 		this._meals.push(meal);
 		this._totalCalories += meal.calories;
 
+		// UPDATE STORAGE DATA
+		Storage.updateTotalCalories(this._totalCalories);
 		// DISPLAY THE MEAL
 		this._displayNewMeal(meal);
 		// TRIGGER RE-RENDER
@@ -160,6 +167,8 @@ class CalorieTracker {
 		this._workouts.push(workout);
 		this._totalCalories -= workout.calories;
 
+		// UPDATE STORAGE DATA
+		Storage.updateTotalCalories(this._totalCalories);
 		// DISPLAY THE WORKOUT
 		this._displayNewWorkout(workout);
 		// TRIGGER RE-RENDER
@@ -184,19 +193,22 @@ class Workout {
 
 class Storage {
 	// STATIC METHOD BECAUSE WE DO NOT NEED ANY INSTANTIATION ON THIS CLASS
-	static getCalorieLimit(defaultLimit = 2000) {
-		let calorieLimit;
-		// IF LOCALSTORAGE DO NOT HAVE ANY DATA, ASSIGN THE DEFAULT
-		if (localStorage.getItem('caloriesLimit') === null) {
-			calorieLimit = defaultLimit;
-		} else {
-			// IF LOCALSTORAGE GOT THE DATA, RETURN THIS TO THE APP
-			calorieLimit = Number(localStorage.getItem('caloriesLimit'));
-		}
-		return calorieLimit;
-	}
 	static setCalorieLimit(calorieLimit) {
 		localStorage.setItem('caloriesLimit', calorieLimit);
+	}
+	static getCalorieLimit() {
+		let calorieLimit = localStorage.getItem('caloriesLimit');
+		// IF LOCALSTORAGE DO NOT HAVE ANY DATA, ASSIGN THE DEFAULT
+		// IF LOCALSTORAGE GOT THE DATA, RETURN THIS TO THE APP
+		return calorieLimit === null ? 2000 : Number(localStorage.getItem('caloriesLimit'));
+	}
+	static getTotalCalories() {
+		let totalCalories = localStorage.getItem('totalCalories');
+		return totalCalories === null ? 0 : Number(totalCalories);
+	}
+	// WHEN AN ITEM ADDED AMEND THE TOTAL CALORIES
+	static updateTotalCalories(calories) {
+		localStorage.setItem('totalCalories', calories);
 	}
 }
 
