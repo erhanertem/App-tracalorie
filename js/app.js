@@ -4,8 +4,10 @@ class CalorieTracker {
 		this._calorieLimit = Storage.getCalorieLimit();
 		// this._totalCalories = 0;
 		this._totalCalories = Storage.getTotalCalories();
-		this._meals = [];
-		this._workouts = [];
+		// this._meals = [];
+		this._meals = Storage.getMeals();
+		// this._workouts = [];
+		this._workouts = Storage.getWorkouts();
 
 		// RAN @ INTIALIZATION
 		this._displayCaloriesLimit();
@@ -157,6 +159,7 @@ class CalorieTracker {
 		this._totalCalories += meal.calories;
 
 		// UPDATE STORAGE DATA
+		Storage.saveMeal(meal);
 		Storage.updateTotalCalories(this._totalCalories);
 		// DISPLAY THE MEAL
 		this._displayNewMeal(meal);
@@ -168,11 +171,16 @@ class CalorieTracker {
 		this._totalCalories -= workout.calories;
 
 		// UPDATE STORAGE DATA
+		Storage.saveWorkout(workout);
 		Storage.updateTotalCalories(this._totalCalories);
 		// DISPLAY THE WORKOUT
 		this._displayNewWorkout(workout);
 		// TRIGGER RE-RENDER
 		this._render();
+	}
+	loadItems() {
+		this._meals.forEach((meal) => this._displayNewMeal(meal));
+		this._workouts.forEach((workout) => this._displayNewWorkout(workout));
 	}
 }
 
@@ -210,14 +218,38 @@ class Storage {
 	static updateTotalCalories(calories) {
 		localStorage.setItem('totalCalories', calories);
 	}
+	static getMeals() {
+		let meals = localStorage.getItem('meals');
+		return meals === null ? [] : JSON.parse(meals);
+	}
+	static saveMeal(meal) {
+		let meals = this.getMeals();
+		meals.push(meal);
+		console.log(meal);
+		localStorage.setItem('meals', JSON.stringify(meals));
+	}
+	static getWorkouts() {
+		let workouts = localStorage.getItem('workouts');
+		return workouts === null ? [] : JSON.parse(workouts);
+	}
+	static saveWorkout(workout) {
+		let workouts = this.getWorkouts();
+		workouts.push(workout);
+		console.log(workout);
+		localStorage.setItem('workouts', JSON.stringify(workouts));
+	}
 }
 
 class App {
 	constructor() {
 		// INITIALIZE CALORIE TRACKER UI
 		this._tracker = new CalorieTracker();
-
-		// CREATE FORM EVENT LISTENERS UPON APP INITIALIZATION
+		// LOAD ITEMS TO UI
+		this._tracker.loadItems();
+		// LOAD EVENT LISTENERS
+		this._loadEventListeners();
+	}
+	_loadEventListeners() {
 		document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));
 		document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
 		document.getElementById('meal-items').addEventListener('click', this._removeItems.bind(this, 'meal'));
