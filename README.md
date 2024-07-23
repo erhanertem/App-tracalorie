@@ -12,7 +12,7 @@
 
 #### Project Preview
 
-![Screenshot](screenshot.webp)
+<img src="./screenshot.webp" width="500px"/>
 
 ---
 
