@@ -1,6 +1,7 @@
 class CalorieTracker {
 	constructor() {
-		this._calorieLimit = 2000;
+		// this._calorieLimit = 2000;
+		this._calorieLimit = Storage.getCalorieLimit();
 		this._totalCalories = 0;
 		this._meals = [];
 		this._workouts = [];
@@ -104,6 +105,9 @@ class CalorieTracker {
 	// PUBLIC API
 	setLimit(calorieLimit) {
 		this._calorieLimit = calorieLimit;
+		// WRITE TO LOCAL STORAGE
+		Storage.setCalorieLimit(calorieLimit);
+
 		this._displayCaloriesLimit();
 		this._displayClaoriesRemaining();
 	}
@@ -175,6 +179,24 @@ class Workout {
 		this.id = Math.random().toString(16).slice(2);
 		this.name = name;
 		this.calories = Number(calories);
+	}
+}
+
+class Storage {
+	// STATIC METHOD BECAUSE WE DO NOT NEED ANY INSTANTIATION ON THIS CLASS
+	static getCalorieLimit(defaultLimit = 2000) {
+		let calorieLimit;
+		// IF LOCALSTORAGE DO NOT HAVE ANY DATA, ASSIGN THE DEFAULT
+		if (localStorage.getItem('caloriesLimit') === null) {
+			calorieLimit = defaultLimit;
+		} else {
+			// IF LOCALSTORAGE GOT THE DATA, RETURN THIS TO THE APP
+			calorieLimit = Number(localStorage.getItem('caloriesLimit'));
+		}
+		return calorieLimit;
+	}
+	static setCalorieLimit(calorieLimit) {
+		localStorage.setItem('caloriesLimit', calorieLimit);
 	}
 }
 
