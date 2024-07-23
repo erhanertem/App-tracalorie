@@ -51,11 +51,47 @@ class CalorieTracker {
 	_displayCaloriesProgress() {
 		const caloriesProgressEl = document.querySelector('#calorie-progress');
 		const progress = (this._totalCalories / this._calorieLimit) * 100;
-		const width = Math.min(progress, 100);
-		caloriesProgressEl.style.width = `${width}%`;
-		caloriesProgressEl.ariaValueNow = `${width}`;
+		const state = Math.max(Math.min(progress, 100), 0);
+		caloriesProgressEl.style.width = `${state}%`;
+		caloriesProgressEl.ariaValueNow = `${state}`;
 	}
 
+	_displayNewMeal(meal) {
+		const mealsList = document.querySelector('#meal-items');
+
+		const newMealEl = document.createElement('div');
+		newMealEl.classList.add('card', 'my-2');
+		newMealEl.setAttribute('data-id', meal.id);
+		newMealEl.innerHTML = `
+      <div class="card-body">
+         <div class="d-flex align-items-center justify-content-between">
+            <h4 class="mx-1">${meal.name}</h4>
+            <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">${meal.calories}</div>
+            <button class="delete btn btn-danger btn-sm mx-2">
+               <i class="fa-solid fa-xmark"></i>
+            </button>
+         </div>
+      </div>`;
+		mealsList.appendChild(newMealEl);
+	}
+	_displayNewWorkout(workout) {
+		const workoutsList = document.querySelector('#workout-items');
+
+		const newWorkoutEl = document.createElement('div');
+		newWorkoutEl.classList.add('card', 'my-2');
+		newWorkoutEl.setAttribute('data-id', workout.id);
+		newWorkoutEl.innerHTML = `
+      <div class="card-body">
+         <div class="d-flex align-items-center justify-content-between">
+            <h4 class="mx-1">${workout.name}</h4>
+            <div class="fs-1 bg-secondary text-white text-center rounded-2 px-2 px-sm-5">${workout.calories}</div>
+            <button class="delete btn btn-danger btn-sm mx-2">
+               <i class="fa-solid fa-xmark"></i>
+            </button>
+         </div>
+      </div>`;
+		workoutsList.appendChild(newWorkoutEl);
+	}
 	// RENDER AFTERFACT THE CHANGES ON WORKOUT OR HAVE MEAL
 	_render() {
 		this._displayCaloriesTotal();
@@ -69,12 +105,18 @@ class CalorieTracker {
 	addMeal(meal) {
 		this._meals.push(meal);
 		this._totalCalories += meal.calories;
+
+		// DISPLAY THE MEAL
+		this._displayNewMeal(meal);
 		// TRIGGER RE-RENDER
 		this._render();
 	}
 	addWorkout(workout) {
 		this._workouts.push(workout);
 		this._totalCalories -= workout.calories;
+
+		// DISPLAY THE WORKOUT
+		this._displayNewWorkout(workout);
 		// TRIGGER RE-RENDER
 		this._render();
 	}
